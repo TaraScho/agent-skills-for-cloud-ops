@@ -36,7 +36,7 @@ import subprocess
 import sys
 import tempfile
 
-STATUSES = ("FIXED", "SKIPPED", "NEEDS_MANUAL_REVIEW")
+STATUSES = ("FIXED", "SKIPPED", "NEEDS_MANUAL_REVIEW", "UNSAFE_DRIFT")
 
 
 def fail(message):
@@ -62,7 +62,7 @@ def load_results(path):
             fail(f"entry for '{directory}' has invalid status {status!r}; must be one of {STATUSES}")
         if status == "FIXED" and (not entry.get("drift") or not entry.get("change")):
             fail(f"FIXED entry for '{directory}' must include 'drift' and 'change'")
-        if status in ("SKIPPED", "NEEDS_MANUAL_REVIEW") and not entry.get("reason"):
+        if status in ("SKIPPED", "NEEDS_MANUAL_REVIEW", "UNSAFE_DRIFT") and not entry.get("reason"):
             fail(f"{status} entry for '{directory}' must include 'reason'")
 
     return data
@@ -73,9 +73,10 @@ def build_body(data):
     fixed = [r for r in results if r["status"] == "FIXED"]
     skipped = [r for r in results if r["status"] == "SKIPPED"]
     manual = [r for r in results if r["status"] == "NEEDS_MANUAL_REVIEW"]
+    unsafe = [r for r in results if r["status"] == "UNSAFE_DRIFT"]
 
-    if not fixed:
-        fail("no FIXED entries in results — don't open a PR with nothing fixed")
+    if not fixed and not unsafe:
+        fail("no FIXED or UNSAFE_DRIFT entries in results — don't open a PR with nothing to report")
 
     lines = []
     lines.append("## Summary")
@@ -99,6 +100,16 @@ def build_body(data):
         lines.append("## Skipped")
         lines.append("")
         for r in skipped:
+            lines.append(f"### `{r['directory']}`")
+            lines.append(f"- **Reason**: {r['reason']}")
+            lines.append("")
+
+    if unsafe:
+        lines.append("## Unsafe drift (not adopted)")
+        lines.append("")
+        lines.append("The deployed value is weaker than the code. Apply the code to correct it; do not merge the drift.")
+        lines.append("")
+        for r in unsafe:
             lines.append(f"### `{r['directory']}`")
             lines.append(f"- **Reason**: {r['reason']}")
             lines.append("")

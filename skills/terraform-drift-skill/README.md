@@ -19,6 +19,17 @@ It never runs `terraform apply` on your behalf.
 Drift needing `terraform import`, `terraform state rm`, or a destructive replace is flagged for
 manual review rather than attempted. See `agents/drift-remediation.md` for the exact rules.
 
+Work always happens on a `drift-fix-*` branch off the default branch unless you say otherwise.
+
+## Not all drift should be adopted
+
+Drift that makes the live infrastructure *weaker* than the code is a bug to fix, not a fact to
+codify. A security group widened to `0.0.0.0/0`, encryption or logging switched off, public
+access enabled, an IAM wildcard added, deletion protection removed: the subagent reports these
+as `UNSAFE_DRIFT` and refuses to edit the code. They appear in the PR as "apply the code to
+correct this". This is the one place where the skill's job is to argue with reality rather than
+match it.
+
 ## Install
 
 ```bash
@@ -45,7 +56,8 @@ Omit the path to scan the current directory.
 - **Never applies.** Every fix is a code change proposed via PR. This is a hard rule in the
   subagent instructions, not a default that can be silently overridden.
 - **Skill + subagent split.** The skill orchestrates (find targets, branch, summarize, PR); the
-  `drift-remediation` subagent does per-directory plan/diff/fix work in its own context.
+  `drift-remediation` subagent does per-directory plan/diff/fix work in its own context, and runs
+  on Sonnet — the per-directory work is mechanical enough not to need a larger model.
 - **Fixed PR format.** `open_drift_pr.py` builds the PR body so the format does not drift
   between runs.
 - **No frontmatter cost.** Drift detection is something you run on a cadence — daily, weekly, or

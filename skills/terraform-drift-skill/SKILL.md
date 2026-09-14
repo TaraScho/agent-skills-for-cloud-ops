@@ -14,7 +14,7 @@ Find Terraform drift under the given path(s) and fix it by editing code to match
 
    If no initialized Terraform roots are found under the given path(s), tell the user and stop — don't attempt to `terraform init` on their behalf, since that may select workspaces or backends you don't understand.
 
-2. **Ask about branching**: Ask the user whether to work on the current branch or create a new branch (e.g. `drift-fix-<short-description>`) off the repo's default branch. Wait for their answer before making any changes.
+2. **Branch**: Unless the user said to work on the current branch, create `drift-fix-<short-description>` off the repo's default branch before making any changes. Never commit drift fixes directly to the default branch.
 
 3. **Remediate each root**: For each Terraform root directory found in step 1, use the `drift-remediation` subagent, passing it that directory. Do this one directory at a time (not all in parallel) so Terraform state locks in the same backend aren't contended.
 
@@ -32,3 +32,5 @@ Find Terraform drift under the given path(s) and fix it by editing code to match
 - Never touch Terraform state directly (`import`, `state rm`, etc.) — flag those cases as `NEEDS_MANUAL_REVIEW` instead of attempting them.
 - Never delete a resource from code just because it's missing from real infrastructure — that may have been intentional. Flag it.
 - If a directory's Terraform backend is locked or credentials are missing, skip that directory and note it in the final report rather than failing the whole run.
+- Never adopt drift that weakens security or reliability (a wider CIDR or `0.0.0.0/0`, encryption/versioning/logging turned off, public access enabled, wildcard IAM, deletion protection off). The subagent reports these as `UNSAFE_DRIFT`; surface them in the PR as "apply the code to correct this", not as a code change.
+- This skill runs only when invoked for drift work. A refresh-only plan hits real provider APIs and takes time; never run one speculatively during unrelated tasks.
