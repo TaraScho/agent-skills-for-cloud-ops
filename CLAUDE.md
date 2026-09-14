@@ -1,1 +1,0 @@
-Most skill directories we are working with are cloned to /Users/tara.schofield/repos/agent-skills-tmp on our local machine.
