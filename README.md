@@ -121,6 +121,13 @@ The `deterministic-calculations.md` reference the talk zooms in on lives
 - [Harness skills in Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-skills.html) — AWS
 - [antonkomarev/github-trending-archive](https://github.com/antonkomarev/github-trending-archive) — data source for the trending-repo charts
 
+## Curating your skill library
+
+The research behind the "more skills isn't better" point in the talk:
+
+- [More Skills, Worse Agents? Skill Shadowing Degrades Performance When Expanding Skill Libraries](https://arxiv.org/abs/2605.24050) — Song & Wei, arXiv, May 2026. Agent performance *drops* as skill libraries grow, and the culprit is picking the wrong skill ("skill shadowing"), not the extra context.
+- [Agent Skills Work But The Research Shows Most Teams Are Building Them Wrong](https://thenuancedperspective.substack.com/p/agent-skills-work-but-the-research) — Movva, Reganti & Badam, The Nuanced Perspective, Apr 2026. Curated skills help; self-generated ones don't reliably, libraries need hierarchy as they scale, and community-sourced skills carry real security risk.
+
 ## Deciding whether a skill earns its place
 
 Ask four questions about the cloud ops task:
