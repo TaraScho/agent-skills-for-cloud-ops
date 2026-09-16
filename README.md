@@ -4,7 +4,7 @@ Resources and code from the talk **"Seven Agent Skills for Real Cloud Ops"** —
 seven agent skills mapped to the lifecycle of one cloud application, plus the patterns for
 deciding when a skill earns its place in your harness.
 
-📄 **[Slides (PDF)](../../releases/latest)** · 🔗 [tara.cloud/talks](https://tara.cloud/talks)
+📄 **[Slides (PDF)](../../releases/latest)**
 
 - **`skills/`** — my example skills. Meant to be **forked and customized**, not installed as-is.
 - Everything else linked below is **open source work by other people** — install it directly.
